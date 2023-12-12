@@ -51,17 +51,3 @@ void print_all_values(gpointer key, gpointer value, gpointer user_data) {
 void dictionary_print_all_values(Dictionary *dictionary) {
     g_hash_table_foreach(dictionary->wordset, print_all_values, NULL);
 }
-
-
-int main() {
-	// Initialize dictionary
-	Dictionary *dict = dictionary_create();
-	// Populate dictionary
-	dictionary_add(dict, "wordlist-ao-20101027.txt");
-	// Check if word exists
-	int exists = dictionary_lookup(dict, "Maria");
-	printf("%d\n", exists);
-	// Release memory
-	dictionary_destroy(dict);
-	return 0;
-}

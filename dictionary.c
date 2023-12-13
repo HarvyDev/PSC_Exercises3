@@ -33,7 +33,6 @@ void dictionary_add(Dictionary *dictionary, const char *filename) {
 }
 
 int dictionary_lookup(Dictionary *dictionary, const char *word){
-	// Implement using GLib data structures
 	return g_hash_table_contains(dictionary->wordset, word);
 }
 
@@ -42,7 +41,7 @@ void dictionary_destroy(Dictionary *dictionary) {
 	g_free(dictionary);
 }
 
-// extra functions
+// Extra functions
 
 void print_all_values(gpointer key, gpointer value, gpointer user_data) {
     printf("Key: %s, Value: %d\n", (char*)key, GPOINTER_TO_INT(value));

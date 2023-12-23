@@ -48,6 +48,8 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 
 				*fileName = strdup(filePath);
 				
+
+
 				break;
 			case 'w':
 				// Testar se já foi inserido um ficheiro de palavras
@@ -77,24 +79,55 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 					return 1;
 				}
 				break;
-			}
-    }
+			}	
+	}
+	if (fileName == NULL && singleWord == NULL) {
+		perror("You must insert a text file or a single word\n");
+		return 1;
+	}
     return 0;
 }
 
-void populateMap(char **dictionaries, int dictIdx) {
+Dictionary *populateMap(char **dictionaries, int dictIdx) {
     Dictionary *dictionary = dictionary_create();
     for (int i = 0; i < dictIdx; i++) {
         dictionary_add(dictionary, dictionaries[i]);
     }
+	return dictionary;
 }
 
-/*
-gcc `pkg-config --cflags glib-2.0` -c dictionary.c -o dictionary.o
-gcc `pkg-config --cflags glib-2.0` -c spell_check.c -o spell_check.o
-gcc dictionary.o spell_check.o `pkg-config --libs glib-2.0` -o spell_check
-*/
+int *spellCheckFile(Dictionary *dictionary, char *fileName) {
+	FILE *file = fopen(fileName, "r");
+	if (file == NULL) {
+		perror("Error opening file");
+		return 1;
+	}
 
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+
+	while ((read = getline(&line, &len, file)) != -1) {
+		char *token = strtok(line, " ");
+		while (token != NULL) {
+			if (!dictionary_lookup(dictionary, token)) {
+				printf("%s\n", token);
+			}
+			token = strtok(NULL, " ");
+		}
+	}
+
+	fclose(file);
+	if (line) {
+		free(line);
+	}
+	return 0;
+}
+
+bool spellCheckWord(Dictionary *dictionary, char *word) {
+	return dictionary_lookup(dictionary, word);
+}
+	
 int main(int argc, char **argv) {
     char *fileName = NULL;
     char *singleWord = NULL;
@@ -103,6 +136,14 @@ int main(int argc, char **argv) {
     int dictIdx = 0;
 
     processOptions(argc, argv, &fileName, &singleWord, dictionaries, dictIdx, maxDictionaries);
+
+	if (fileName != NULL) {
+		Dictionary *dictionary = populateMap(dictionaries, dictIdx);
+		spellCheckFile(dictionary, fileName);
+	}
+	else {
+		spellCheckWord(dictionary, singleWord);
+	}
 
 	free(fileName);
 	free(singleWord);

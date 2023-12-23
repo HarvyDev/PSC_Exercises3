@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <limits.h>
-#include <glib.h>
 #include <ctype.h>
 #include "dictionary.h"
 
@@ -49,8 +48,6 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 
 				*fileName = strdup(filePath);
 				
-
-
 				break;
 			case 'w':
 				// Testar se já foi inserido um ficheiro de palavras
@@ -60,8 +57,8 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 				}
 				
 				*singleWord = strdup(optarg);
-				break;
 
+				break;
 			case 'd':
 				// Juntar o path da diretoria corrente com o nome do ficheiro 
 				snprintf(filePath, sizeof(filePath), "%s/%s", currentDir, optarg);
@@ -116,7 +113,6 @@ int isAlphanumeric(char c){
     return isalpha(c) || isdigit(c);
 }
 
-
 void spellCheckFile(Dictionary *dictionary, char *fileName) {
     FILE *file = fopen(fileName, "r");
     if (file == NULL) {
@@ -144,7 +140,7 @@ void spellCheckFile(Dictionary *dictionary, char *fileName) {
                 word[i] = token[i];
             }
 
-            if (!dictionary_lookup(dictionary, word)) {
+            if (strlen(word) > 0 && !dictionary_lookup(dictionary, word)) {
                 Position pos = getPosition(currentLine, currentColumn);
                 printf("Word misspelled: '%s' at [ %zu , %zu ]\n", word, pos.line, pos.column);
             }

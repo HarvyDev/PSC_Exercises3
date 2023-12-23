@@ -46,7 +46,7 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 					return 1;
 				}
 
-				*fileName = g_strdup(filePath);
+				*fileName = strdup(filePath);
 				
 				break;
 			case 'w':
@@ -56,7 +56,7 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 					return 1;
 				}
 				
-				*singleWord = g_strdup(optarg);
+				*singleWord = strdup(optarg);
 				break;
 
 			case 'd':
@@ -70,7 +70,7 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 				}
 
 				if (dictIdx < maxDictionaries) {
-					dictionaries[dictIdx] = g_strdup(filePath);
+					dictionaries[dictIdx] = strdup(filePath);
 					dictIdx++;
 				} else {
 					perror("You can't use more than 3 dictionaries\n");
@@ -104,8 +104,8 @@ int main(int argc, char **argv) {
 
     processOptions(argc, argv, &fileName, &singleWord, dictionaries, dictIdx, maxDictionaries);
 
-	g_free(fileName);
-	g_free(singleWord);
+	free(fileName);
+	free(singleWord);
 
     return 1;
 }

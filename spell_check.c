@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <limits.h>
 #include <glib.h>
+#include <ctype.h>
 #include "dictionary.h"
 
 
@@ -116,7 +117,7 @@ int isAlphanumeric(char c){
 }
 
 
-int *spellCheckFile(Dictionary *dictionary, char *fileName) {
+void *spellCheckFile(Dictionary *dictionary, char *fileName) {
 	FILE *file = fopen(fileName, "r");
 	if (file == NULL) {
 		perror("Error opening file");
@@ -136,16 +137,16 @@ int *spellCheckFile(Dictionary *dictionary, char *fileName) {
             char *punctuation = NULL;
 
             for(size_t i = 0; i < strlen(token); i++){
-                if(!isAlpherinumeric(token[i])){
-                    word[i] = '\0'
+                if(!isAlphanumeric(token[i])){
+                    word[i] = '\0';
                     punctuation = &token[i];
                     break;
                 }
             }
 
 			if (!dictionary_lookup(dictionary, word)) {
-                Position
-				printf("Word misspelled: '%s' at [ %zu , %zu ]", word,pos.line,pos.column);
+                Position pos = getPosition(currentLine, currentColumn);
+				printf("Word misspelled: '%s' at [ %zu , %zu ]", word, pos.line, pos.column);
 			}
 			token = strtok(NULL, " ");
             currentColumn += strlen(token);
@@ -173,8 +174,9 @@ int main(int argc, char **argv) {
 
     processOptions(argc, argv, &fileName, &singleWord, dictionaries, dictIdx, maxDictionaries);
 
+	Dictionary *dictionary = populateMap(dictionaries, dictIdx);
+
 	if (fileName != NULL) {
-		Dictionary *dictionary = populateMap(dictionaries, dictIdx);
 		spellCheckFile(dictionary, fileName);
 	}
 	else {

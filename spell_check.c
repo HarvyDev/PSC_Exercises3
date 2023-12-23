@@ -106,8 +106,8 @@ typedef struct {
 // Vai criar a posição de inicio da palavra mal escrita
 Position getPosition(size_t line, size_t column){
     Position pos;
-    pos.line;
-    pos.column;
+    pos.line = line;
+    pos.column = column;
     return pos;
 }
 
@@ -117,48 +117,48 @@ int isAlphanumeric(char c){
 }
 
 
-void *spellCheckFile(Dictionary *dictionary, char *fileName) {
-	FILE *file = fopen(fileName, "r");
-	if (file == NULL) {
-		perror("Error opening file");
-		return 1;
-	}
+void spellCheckFile(Dictionary *dictionary, char *fileName) {
+    FILE *file = fopen(fileName, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return;
+    }
 
-	char *line = NULL;
-	size_t len = 0;
-	size_t read;
+    char *line = NULL;
+    size_t len = 0;
+    size_t read;
     size_t currentLine = 1;
 
-	while ((read = getline(&line, &len, file)) != -1) {
+    while ((read = getline(&line, &len, file)) != -1) {
+        char *saveptr;
         size_t currentColumn = 1;
-		char *token = strtok(line, " ");
-		while (token != NULL) {
-            char *word = token;
-            char *punctuation = NULL;
+        char *token = strtok_r(line, " ", &saveptr);
+        while (token != NULL) {
+            char word[100];
 
-            for(size_t i = 0; i < strlen(token); i++){
-                if(!isAlphanumeric(token[i])){
+            for (size_t i = 0; i < strlen(token); i++) {
+                if (!isAlphanumeric(token[i])) {
                     word[i] = '\0';
-                    punctuation = &token[i];
                     break;
                 }
+                word[i] = token[i];
             }
 
-			if (!dictionary_lookup(dictionary, word)) {
+            if (!dictionary_lookup(dictionary, word)) {
                 Position pos = getPosition(currentLine, currentColumn);
-				printf("Word misspelled: '%s' at [ %zu , %zu ]", word, pos.line, pos.column);
-			}
-			token = strtok(NULL, " ");
-            currentColumn += strlen(token);
-		}
-        currentLine++;
-	}
+                printf("Word misspelled: '%s' at [ %zu , %zu ]\n", word, pos.line, pos.column);
+            }
 
-	fclose(file);
-	if (line) {
-		free(line);
-	}
-	return 0;
+            currentColumn += strlen(token) + 1; // Update column position considering the space
+            token = strtok_r(NULL, " ", &saveptr);
+        }
+        currentLine++;
+    }
+
+    fclose(file);
+    if (line) {
+        free(line);
+    }
 }
 
 bool spellCheckWord(Dictionary *dictionary, char *word) {

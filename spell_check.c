@@ -4,7 +4,9 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <limits.h>
+#include <glib.h>
 #include "dictionary.h"
+
 
 bool file_exists(char *file) {
     return !(access(file, F_OK) == -1);
@@ -44,7 +46,7 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 					return 1;
 				}
 
-				*fileName = strdup(filePath);
+				*fileName = g_strdup(filePath);
 				
 				break;
 			case 'w':
@@ -54,7 +56,7 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 					return 1;
 				}
 				
-				*singleWord = strdup(optarg);
+				*singleWord = g_strdup(optarg);
 				break;
 
 			case 'd':
@@ -68,7 +70,7 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 				}
 
 				if (dictIdx < maxDictionaries) {
-					dictionaries[dictIdx] = strdup(filePath);
+					dictionaries[dictIdx] = g_strdup(filePath);
 					dictIdx++;
 				} else {
 					perror("You can't use more than 3 dictionaries\n");
@@ -80,7 +82,7 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
     return 0;
 }
 
-int populateMap(char **dictionaries, int dictIdx) {
+void populateMap(char **dictionaries, int dictIdx) {
     Dictionary *dictionary = dictionary_create();
     for (int i = 0; i < dictIdx; i++) {
         dictionary_add(dictionary, dictionaries[i]);
@@ -102,8 +104,8 @@ int main(int argc, char **argv) {
 
     processOptions(argc, argv, &fileName, &singleWord, dictionaries, dictIdx, maxDictionaries);
 
-    free(fileName);
-	free(singleWord);
+	g_free(fileName);
+	g_free(singleWord);
 
     return 1;
 }

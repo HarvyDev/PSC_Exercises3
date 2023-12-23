@@ -96,6 +96,26 @@ Dictionary *populateMap(char **dictionaries, int dictIdx) {
 	return dictionary;
 }
 
+// Define a struct que possui a informação da posição
+typedef struct {
+    size_t line;
+    size_t column;
+} Position;
+
+// Vai criar a posição de inicio da palavra mal escrita
+Position getPosition(size_t line, size_t column){
+    Position pos;
+    pos.line;
+    pos.column;
+    return pos;
+}
+
+// Testa se um character é alfanumerico
+int isAlphanumeric(char c){
+    return isalpha(c) || isdigit(c);
+}
+
+
 int *spellCheckFile(Dictionary *dictionary, char *fileName) {
 	FILE *file = fopen(fileName, "r");
 	if (file == NULL) {
@@ -105,16 +125,32 @@ int *spellCheckFile(Dictionary *dictionary, char *fileName) {
 
 	char *line = NULL;
 	size_t len = 0;
-	ssize_t read;
+	size_t read;
+    size_t currentLine = 1;
 
 	while ((read = getline(&line, &len, file)) != -1) {
+        size_t currentColumn = 1;
 		char *token = strtok(line, " ");
 		while (token != NULL) {
-			if (!dictionary_lookup(dictionary, token)) {
-				printf("%s\n", token);
+            char *word = token;
+            char *punctuation = NULL;
+
+            for(size_t i = 0; i < strlen(token); i++){
+                if(!isAlpherinumeric(token[i])){
+                    word[i] = '\0'
+                    punctuation = &token[i];
+                    break;
+                }
+            }
+
+			if (!dictionary_lookup(dictionary, word)) {
+                Position
+				printf("Word misspelled: '%s' at [ %zu , %zu ]", word,pos.line,pos.column);
 			}
 			token = strtok(NULL, " ");
+            currentColumn += strlen(token);
 		}
+        currentLine++;
 	}
 
 	fclose(file);

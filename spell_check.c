@@ -162,7 +162,12 @@ void spellCheckFile(Dictionary *dictionary, char *fileName) {
 }
 
 bool spellCheckWord(Dictionary *dictionary, char *word) {
-	return dictionary_lookup(dictionary, word);
+	if (!dictionary_lookup(dictionary, word)) {
+		printf("The word '%s' is correctly spelled\n", word);
+		return true;
+	};
+	printf("The word '%s' is misspelled\n", word);
+	return false;
 }
 	
 int main(int argc, char **argv) {

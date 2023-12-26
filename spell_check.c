@@ -13,7 +13,7 @@ bool file_exists(char *file) {
     return !(access(file, F_OK) == -1);
 }
 
-int processOptions(int argc, char **argv, char **fileName, char **singleWord, char **dictionaries, int dictIdx, int maxDictionaries) {
+int processOptions(int argc, char **argv, char **fileName, char **singleWord, char **dictionaries, int *dictIdx, int maxDictionaries) {
     if (argc < 2) {
         printf("No parameters were inserted\n");
         return 1;
@@ -70,9 +70,9 @@ int processOptions(int argc, char **argv, char **fileName, char **singleWord, ch
 					return 1;
 				}
 
-				if (dictIdx < maxDictionaries) {
-					dictionaries[dictIdx] = strdup(filePath);
-					dictIdx++;
+				if ((*dictIdx) < maxDictionaries) {
+					dictionaries[(*dictIdx)] = strdup(filePath);
+					(*dictIdx)++;
 				} else {
 					perror("You can't use more than 3 dictionaries\n");
 					return 1;
@@ -114,7 +114,7 @@ int isAlphanumeric(char c){
     return isalpha(c) || isdigit(c);
 }
 
-bool spellCheckWord(Dictionary *dictionary, char *word) {
+bool spellCheckWord(Dictionary *dictionary, const char *word) {
 	if (dictionary_lookup(dictionary, word)) {
 		printf("The word '%s' is correctly spelled\n", word);
 		return true;
@@ -123,7 +123,7 @@ bool spellCheckWord(Dictionary *dictionary, char *word) {
 	return false;
 }
 
-void spellCheckFile(Dictionary *dictionary, char *fileName) {
+void spellCheckFile(Dictionary *dictionary, const char *fileName) {
     FILE *file = fopen(fileName, "r, ccs=UTF-8");
     if (file == NULL) {
         perror("Error opening file");
@@ -141,7 +141,6 @@ void spellCheckFile(Dictionary *dictionary, char *fileName) {
         size_t currentColumn = 1;
         last_token = strtok(buffer, delimiters);
         while (last_token != NULL) {
-            printf("Token: '%s'\n", last_token);
             if (strlen((last_token)) > 0 && !dictionary_lookup(dictionary, last_token)) {
                 Position pos = getPosition(currentLine, currentColumn);
                 printf("Word misspelled: '%s' at [ %zu , %zu ]\n", last_token, pos.line, pos.column);
@@ -163,7 +162,7 @@ int main(int argc, char **argv) {
     char *dictionaries[maxDictionaries]; // Array de dicionários que vão popular o mapa
     int dictIdx = 0;
 
-    processOptions(argc, argv, &fileName, &singleWord, dictionaries, dictIdx, maxDictionaries);
+    processOptions(argc, argv, &fileName, &singleWord, dictionaries, &dictIdx, maxDictionaries);
 
 	Dictionary *dictionary = populateMap(dictionaries, dictIdx);
 

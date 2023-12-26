@@ -114,6 +114,15 @@ int isAlphanumeric(char c){
     return isalpha(c) || isdigit(c);
 }
 
+bool spellCheckWord(Dictionary *dictionary, char *word) {
+	if (dictionary_lookup(dictionary, word)) {
+		printf("The word '%s' is correctly spelled\n", word);
+		return true;
+	};
+	printf("The word '%s' is misspelled\n", word);
+	return false;
+}
+
 void spellCheckFile(Dictionary *dictionary, char *fileName) {
     FILE *file = fopen(fileName, "r, ccs=UTF-8");
     if (file == NULL) {
@@ -130,11 +139,10 @@ void spellCheckFile(Dictionary *dictionary, char *fileName) {
 
     while ((fgets(buffer, 1024, file)) != NULL) {
         size_t currentColumn = 1;
-        // fputs( buffer, stdout ); // Print line to stdout
         last_token = strtok(buffer, delimiters);
         while (last_token != NULL) {
             printf("Token: '%s'\n", last_token);
-            if (strlen(last_token) > 0 && !dictionary_lookup(dictionary, last_token)) {
+            if (strlen((last_token)) > 0 && !dictionary_lookup(dictionary, last_token)) {
                 Position pos = getPosition(currentLine, currentColumn);
                 printf("Word misspelled: '%s' at [ %zu , %zu ]\n", last_token, pos.line, pos.column);
             }
@@ -147,14 +155,6 @@ void spellCheckFile(Dictionary *dictionary, char *fileName) {
     fclose(file);
 }
 
-bool spellCheckWord(Dictionary *dictionary, char *word) {
-	if (!dictionary_lookup(dictionary, word)) {
-		printf("The word '%s' is correctly spelled\n", word);
-		return true;
-	};
-	printf("The word '%s' is misspelled\n", word);
-	return false;
-}
 
 int main(int argc, char **argv) {
     char *fileName = NULL;

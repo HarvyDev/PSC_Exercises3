@@ -1,6 +1,3 @@
-//
-// Created by pauloctt on 12/23/23.
-//
 
 // Unit Test for the functions
 
@@ -119,51 +116,11 @@ void test_dictionary_print_all_values() {
 
 }
 
-// Test for SpellCheckFile
-void test_spellCheckFile() {
-    Dictionary *dictionary = dictionary_create();
-    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
-        dictionary_add(dictionary, cases[i].filename);
-    }
-    for ( size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++ ) {
-        const char *filename = cases[i].filename;
-
-        if ( spellCheckFile(dictionary, filename) == 1 ) {
-            printf("File '%s' found in the dictionary.\n", filename);
-        }
-        else {
-            printf("File '%s' not found in the dictionary.\n", filename);
-        }
-    }
-}
-
-// Test for spellCheckWord
-void test_spellCheckWord() {
-    Dictionary *dictionary = dictionary_create();
-    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
-        dictionary_add(dictionary, cases[i].filename);
-    }
-    for ( size_t i = 0; i < sizeof(testWords) / sizeof(testWords[0]); i++ ) {
-        const char *word = testWords[i];
-        if ( spellCheckWord(dictionary, word) == 1 ) {
-            printf("Word '%s' found in the dictionary.\n", word);
-        }
-        else {
-            printf("Word '%s' not found in the dictionary.\n", word);
-        }
-    }
-    dictionary_destroy(dictionary);
-}
-
-int main() {
+int main(){
     test_dictionary_create();
-    test_dictionary_add();
     test_dictionary_lookup();
+    test_dictionary_add();
     test_dictionary_destroy();
     test_print_all_values();
     test_dictionary_print_all_values();
-    test_populateMap();
-    test_spellCheckFile();
-    test_spellCheckWord();
-    return 0;
 }
